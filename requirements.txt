@@ -1,0 +1,8 @@
+# python==3.8.5
+# pip==20.2.4
+
+easygui==0.98.1
+PySide2==5.15.1
+shiboken2==5.15.1
+PyInstaller==3.6
+
