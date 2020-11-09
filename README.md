@@ -37,15 +37,20 @@ Não foi desenvolvido o ambiente de testes.
 
 No desenvolvimento do programa foram utilizadas as seguintes configurações:
 
-Notebook
+Notebook:
 * Core I7
 * 16gb memória RAM
 * HD 1 Terabyte 
 * GTX 1050 TI
 * Windows 10
+
 Visual Studio Code Versão: 1.51.0
+
 Qt Designer Versão: 5.11.1
+
 Python Versão: 3.8.5
+
+Bibliotecas:
 * sqlite3 - Nativo
 * csv - Nativo
 * easygui - Versão: 0.98.1
