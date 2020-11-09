@@ -44,13 +44,13 @@ Notebook:
 * GTX 1050 TI
 * Windows 10
 
-Visual Studio Code Versão: 1.51.0
+IDE:
+* Visual Studio Code Versão: 1.51.0
 
-Qt Designer Versão: 5.11.1
+Criação da interface visual:
+* Qt Designer Versão: 5.11.1
 
-Python Versão: 3.8.5
-
-Bibliotecas:
+Python 3.8.5 com as bibliotecas:
 * sqlite3 - Nativo
 * csv - Nativo
 * easygui - Versão: 0.98.1
