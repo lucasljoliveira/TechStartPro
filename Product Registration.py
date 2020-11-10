@@ -162,7 +162,7 @@ class database:
                 query = """SELECT PRODUCT.* FROM PRODUCT"""
                 c.execute(query)
             if searchType == 1:
-                query = """SELECT PRODUCT.* FROM PRODUCT 
+                query = """SELECT DISTINCT PRODUCT.* FROM PRODUCT 
                                 LEFT JOIN PRODUCTCATEGORY ON PRODUCTCATEGORY.IDPRODUCT = PRODUCT.IDPRODUCT 
                                 LEFT JOIN CATEGORY ON PRODUCTCATEGORY.IDCATEGORY = CATEGORY.IDCATEGORY 
                                 WHERE (PRODUCT.NAME LIKE :p_name OR :p_name = '')
@@ -375,6 +375,7 @@ def main(ui):
             i = 0
             items = []
             for product in products:
+                print(product.name)
                 item = QTableWidgetItem()
                 item.setFlags(Qt.ItemFlags(1))
                 item.setText(str(product.id))
