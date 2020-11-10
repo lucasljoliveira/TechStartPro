@@ -1,17 +1,18 @@
-import sqlite3
-import csv
+import sqlite3 # DATABASE
+import csv # IMPORT CSV FILE
 import easygui #OPEN ARCHIVE
-import sys
-import os 
-from mainWindow import *
-from newProductWindow import *
-from categoriesFound import *
+import sys # TO IMPORT ARGS
+from mainWindow import * # MAIN WINDOW
+from newProductWindow import * # NEW/EDIT PRODUCTS WINDOW
+from categoriesFound import * # WINDOW WITH CATEGORIES FOUND IN CSV FILE
 
+# CATEGORY CLASS
 class category():
     def __init__(self, id, name):
         self.id = id
         self.name = name
 
+# PRODUCT CLASS
 class product():
     def __init__(self, id, name, description, price, categories):
         self.id = id
@@ -20,11 +21,12 @@ class product():
         self.price = price
         self.categories = categories
 
+# DATABASE FUNCTIONS
 class database:
+    # START DATABASE
     def __init__(self):
         try:
             conn = sqlite3.connect('product.db')
-            print(os.getcwd())
             c = conn.cursor()
             c.execute("PRAGMA foreign_keys= 1")
             c.execute("PRAGMA table_info(PRODUCTCATEGORY)")
@@ -54,6 +56,7 @@ class database:
             conn.close()
 
 # CATEGORIES!
+    # CREATE CATEGORY IN DATABASE
     def createCategory(self, category):
         try:
             conn = sqlite3.connect('product.db')
@@ -72,6 +75,7 @@ class database:
         finally:
             conn.close()
 
+    # SELECT CATEGORY FROM DATABASE
     def selectCategory(self, search, searchType):
         try:
             categories = []
@@ -112,6 +116,7 @@ class database:
 
         return categories
 
+    # UPDATE CATEGORY FROM DATABASE
     def updateCategory(self, category):
         try:
             conn = sqlite3.connect('product.db')
@@ -128,7 +133,8 @@ class database:
             print('Query Failed: %s\nError: %s' % (query, str(err)))
         finally:
             conn.close()
-
+    
+    # DELETE CATEGORY FROM DATABASE
     def deleteCategory(self, category):
         try:
             conn = sqlite3.connect('product.db')
@@ -145,7 +151,8 @@ class database:
         finally:
             conn.close()
 
-    # PRODUCTS
+# PRODUCTS DATABASE FUNCTIONS
+    # SELECT PRODUCTS FROM DATABASE
     def selectProduct(self, search, searchType):
         try:
             products = []
@@ -207,6 +214,7 @@ class database:
 
         return products
 
+    # CREATE PRODUCT IN DATABASE
     def createProduct(self, product):
         conn = sqlite3.connect('product.db')
         c = conn.cursor()
@@ -235,6 +243,7 @@ class database:
             
             conn.close()
 
+    # UPDATE PRODUCT FROM DATABASE
     def updateProduct(self, product):
         try:
             conn = sqlite3.connect('product.db')
@@ -274,6 +283,7 @@ class database:
         finally:
             conn.close()
 
+    # DELETE PRODUCT FROM DATABASE
     def deleteProduct(self, product):
         try:
             conn = sqlite3.connect('product.db')
@@ -290,8 +300,9 @@ class database:
         finally:
             conn.close()
 
-            
+#SERVICES     
 class services:
+    # READ CSV SERVICE
     def readCategoryCSV(self):
         categories = []
         filename = ''
@@ -309,11 +320,18 @@ class services:
         return categories
        
 
+# MAIN WINDOW
 def main(ui):
     db = database()
     s = services()
 
-    # MAIN WINDOW
+# MAIN WINDOW FUNCTIONS
+
+    # CLOSE SYSTEM
+    def exitAll():
+        mainWindow.close()
+
+    # UPDATE SELECTED PRODUCT
     def updateProduct():
         if ui.tableWidget_products.selectionModel().hasSelection():
             p = db.selectProduct(ui.tableWidget_products.item(ui.tableWidget_products.selectionModel().currentIndex().row(), 0).text(), 0)[0]
@@ -326,6 +344,7 @@ def main(ui):
             msg.setStandardButtons(QMessageBox.Ok)
             option = msg.exec_()
     
+    # DELETE SELECTED PRODUCT
     def deleteProduct():
         if ui.tableWidget_products.selectionModel().hasSelection():
             p = db.selectProduct(ui.tableWidget_products.item(ui.tableWidget_products.selectionModel().currentIndex().row(), 0).text(), 0)[0]
@@ -348,7 +367,7 @@ def main(ui):
             msg.setStandardButtons(QMessageBox.Ok)
             option = msg.exec_()
 
-
+    # SEARCH PRODUCTS BUTTON
     def searchProduct():
         products = db.selectProduct([ui.lineEdit_Name.text(), ui.lineEdit_Description.text(), ui.lineEdit_Price.text(), ui.lineEdit_Category.text()], 1)
         if products != []:
@@ -401,8 +420,8 @@ def main(ui):
                 msg.setStandardButtons(QMessageBox.Ok)
                 option = msg.exec_()
 
-
-    # NEW CATEGORIES FUNCTIONS
+# IMPORT CATEGORIES WINDOW FUNCTIONS
+    # WINDOW WITH DATA FOUND IN CSV
     def importCatetoriesWindow():
         ui_c.listWidget_CategoriesFound.clear()
         categories = s.readCategoryCSV()
@@ -426,15 +445,19 @@ def main(ui):
             msg.setStandardButtons(QMessageBox.Ok)
             msg.exec_()
         
+
+    # DON'T SAVE CSV CATEGORIES FOUND 
     def closeCategoriesFound():
         newCategoriesWindow.close()
         mainWindow.show()
     
+    # REMOVE CSV FOUND CATEGORIES TO SAVE
     def removeCategoriesFound():
         itens = ui_c.listWidget_CategoriesFound.selectedItems()
         for item in itens:
             ui_c.listWidget_CategoriesFound.takeItem(ui_c.listWidget_CategoriesFound.row(item))
 
+    # SAVE CATEGORIES FROM CSV FILE
     def saveCategoriesFound():
         if ui_c.listWidget_CategoriesFound.count() > 0:
             for i in range(0, ui_c.listWidget_CategoriesFound.count()):
@@ -453,7 +476,8 @@ def main(ui):
             mainWindow.show()
 
 
-    # NEW PRODUCT FUNCTIONS
+# NEW/EDIT PRODUCT FUNCTIONS
+    # CREATE WINDOW TO EDIT/CREATE PRODUCT
     def createEditProduct(product):
         if product is not False:
             ui_p.label_NewID.setText(str(product.id))
@@ -478,6 +502,7 @@ def main(ui):
         newProductWindow.show()
         mainWindow.close()
 
+    # ADD CATEGORY NEW/EDIT PRODUCT
     def newProductWindowAddCategory():
         if (ui_p.comboBox_CategoriesList.currentText() != ''):
             itens = ui_p.listWidget_CategoriesAdded.findItems(ui_p.comboBox_CategoriesList.currentText(), Qt.MatchExactly)
@@ -491,11 +516,13 @@ def main(ui):
             msg.setStandardButtons(QMessageBox.Ok)
             option = msg.exec_()
 
+    # REMOVE CATEGORY FROM NEW/EDIT PRODUCT
     def newProductWindowRemoveCategory():
         itens = ui_p.listWidget_CategoriesAdded.selectedItems()
         for item in itens:
             ui_p.listWidget_CategoriesAdded.takeItem(ui_p.listWidget_CategoriesAdded.row(item))
-        
+
+    # SAVE NEW/EDIT PRODUCT 
     def newProductWindowSaveProduct():
         if ui_p.lineEdit_Name.text() or ui_p.lineEdit_Description.text() or ui_p.lineEdit_Price.text() != '':
             price_digit = False
@@ -550,14 +577,13 @@ def main(ui):
             msg.setStandardButtons(QMessageBox.Ok)
             msg.exec_()
 
+    # EXIT FROM EDIT/NEW PRODUCT
     def newProductWindowClose():
         newProductWindow.close()
         mainWindow.show()
+        return 0
 
-    def exitAll():
-        mainWindow.close()
-
-    # MAIN WINDOW
+    # MAIN WINDOW BUTTONS
     ui.pushButton_CreateProduct.clicked.connect(createEditProduct)
     ui.pushButton_Search.clicked.connect(searchProduct)
     ui.pushButton_ImportCategories.clicked.connect(importCatetoriesWindow)
@@ -567,7 +593,7 @@ def main(ui):
     ui.tableWidget_products.setSelectionMode(QAbstractItemView.SingleSelection)
 
 
-    # NEW CATEGORIES WINDOW
+    # NEW CATEGORIES WINDOW / BUTTONS
     newCategoriesWindow = QDialog()
     ui_c = Ui_Form_CategoriesFound()
     ui_c.setupUi(newCategoriesWindow)
@@ -576,7 +602,7 @@ def main(ui):
     ui_c.pushButton_SaveCategoriesFound.clicked.connect(saveCategoriesFound)
 
 
-    # NEW PRODUCT WINDOW
+    # NEW PRODUCT WINDOW / BUTTONS
     newProductWindow = QDialog()
     ui_p = Ui_Form_NewProduct()
     ui_p.setupUi(newProductWindow)
@@ -586,6 +612,7 @@ def main(ui):
     ui_p.pushButton_CloseProduct.clicked.connect(newProductWindowClose)
 
 
+# CREATE APP WINDOW AD START MAIN WITH MAINWINDOW
 if __name__ == "__main__":
     import sys
     app = QApplication(sys.argv)
